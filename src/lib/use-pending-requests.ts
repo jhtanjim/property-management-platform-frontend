@@ -7,7 +7,8 @@ export function usePendingRequests() {
   const enabled = admin?.admin?.role === "superAdmin" && Boolean(admin?.token);
 
   const { data } = useQuery({
-    queryKey: ["pending-requests"],
+    // Per account, so a count from a previous sign-in in this tab is never shown.
+    queryKey: ["pending-requests", admin?.admin?.id],
     enabled,
     refetchInterval: 30_000,
     queryFn: async () => {
@@ -19,7 +20,7 @@ export function usePendingRequests() {
     },
   });
 
-  const property = data?.property ?? 0;
-  const floor = data?.floor ?? 0;
+  const property = enabled ? (data?.property ?? 0) : 0;
+  const floor = enabled ? (data?.floor ?? 0) : 0;
   return { property, floor, total: property + floor };
 }
